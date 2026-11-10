@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>털린곳 찾기</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="config.js"></script>
+  <script src="breaches.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-inner">
+      <div class="brand"><span class="dot"></span>털린곳 찾기</div>
+      <button class="link" id="btn-settings" type="button">설정</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- 시작 화면 -->
+    <section id="view-start" class="hero">
+      <p class="eyebrow">개인정보 유출 확인</p>
+      <h1>털린 건 알았는데,<br />보상은 얼마나 놓치셨나요?</h1>
+      <p class="lead">메일함에 이미 와 있던 유출 통지와 보상 안내를 찾아서, 놓친 금액과 지금이라도 받을 수 있는 금액을 알려드려요. 청구는 저희가 대신 준비해 드립니다.</p>
+      <div class="cta">
+        <button class="btn primary" id="btn-google" type="button">Google 메일로 확인하기</button>
+        <button class="btn ghost" id="btn-demo" type="button">예시 결과 보기</button>
+      </div>
+      <ul class="promise">
+        <li>메일 본문은 읽지 않습니다. 보낸 곳·제목·날짜만 봅니다.</li>
+        <li>모든 처리는 이 브라우저 안에서만 하고, 서버에 저장하지 않습니다.</li>
+        <li>창을 닫으면 접근 권한도 사라집니다.</li>
+      </ul>
+      <p class="trial">지금은 시범 운영 중이라 초대받은 분만 Google 로그인을 쓸 수 있어요. 로그인 때 "Google에서 확인하지 않은 앱" 안내가 나오면 <b>고급 → 계속</b>을 눌러 주세요.</p>
+      <p class="warn" id="setup-warn" hidden>Google 로그인을 쓰려면 먼저 <b>설정</b>에서 OAuth 클라이언트 ID를 넣어 주세요. 지금은 예시 결과만 볼 수 있습니다.</p>
+    </section>
+
+    <!-- 진행 화면 -->
+    <section id="view-progress" hidden>
+      <h2>메일함을 확인하고 있어요</h2>
+      <div class="bar"><div class="bar-fill" id="bar-fill"></div></div>
+      <p class="muted" id="progress-text">준비 중…</p>
+    </section>
+
+    <!-- 결과 화면 -->
+    <section id="view-result" hidden>
+      <div class="summary" id="summary"></div>
+      <div id="groups"></div>
+      <p class="fine">사건 정보는 샘플 데이터입니다. "가입돼 있었음"은 사고 전에 그 서비스의 메일을 받은 기록이 있다는 뜻이며, 실제 유출 대상인지는 각 회사의 조회 서비스로 확인해야 합니다.</p>
+      <button class="btn ghost" id="btn-again" type="button">처음으로</button>
+    </section>
+  </main>
+
+  <!-- 설정 -->
+  <dialog id="dlg-settings">
+    <form method="dialog" class="dlg">
+      <h3>설정</h3>
+      <label for="in-name">문의 메일에 쓸 이름</label>
+      <input id="in-name" type="text" placeholder="홍길동" autocomplete="name" />
+      <p class="muted small">이름은 이 브라우저에만 저장됩니다.</p>
+      <div id="client-box">
+        <label for="in-client">Google OAuth 클라이언트 ID (개발용)</label>
+        <input id="in-client" type="text" placeholder="xxxx.apps.googleusercontent.com" autocomplete="off" />
+      </div>
+      <div class="dlg-actions">
+        <button class="btn ghost" value="cancel">닫기</button>
+        <button class="btn primary" id="btn-save" value="save">저장</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- 청구 도움 -->
+  <dialog id="dlg-help">
+    <div class="dlg wide">
+      <div class="dlg-top">
+        <div>
+          <h3 id="help-title">문의 메일을 보낼게요</h3>
+          <p class="muted small" id="help-from"></p>
+        </div>
+        <button class="link" id="btn-help-close" type="button" aria-label="닫기">닫기</button>
+      </div>
+      <p class="small">각 회사에 <b>개인정보 열람 요구</b>(법정 회신 기한 10일)와 보상 문의를 함께 보냅니다. 회신이 오면 '내 문의 현황'에서 알려드리고, 기한이 지나면 신고까지 도와드려요.</p>
+      <div id="step-bar" class="step-bar" hidden></div>
+      <div id="mail-list"></div>
+      <div class="dlg-actions" id="help-actions">
+        <button class="btn ghost" id="btn-step" type="button">하나씩 확인하며 보내기</button>
+        <button class="btn primary" id="btn-send-all" type="button">한 번에 모두 보내기</button>
+      </div>
+      <div class="dlg-actions" id="step-actions" hidden>
+        <button class="btn ghost" id="btn-skip" type="button">건너뛰기</button>
+        <button class="btn primary" id="btn-send-one" type="button">이 메일 보내기</button>
+      </div>
+    </div>
+  </dialog>
+
+  <footer class="foot wrap">
+    <span>털린곳 찾기 · 시범 운영 중</span>
+    <a href="privacy.html">개인정보처리방침</a>
+    <a href="terms.html">이용약관</a>
+  </footer>
+
+  <div class="toast" id="toast" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>
